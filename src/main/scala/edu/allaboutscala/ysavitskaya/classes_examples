@@ -1,108 +1,130 @@
 package edu.allaboutscala.ysavitskaya
 
-/*Основной конструктор включает полное описание класса
-, т.е. в примере ниже поле “age” инициализируется как часть основного конструктора класса Employee.
+//  ____________________ SomeClass_1 ____________________
+/*Основной конструктор включает полное описание класса , т.е. в примере ниже поле “x” инициализируется как часть основного конструктора класса SomeClass_1.
 Тело класса является основным конструктором
 */
 class SomeClass_1{
+  println("\nSomeClass_1: Основной конструктор")
   var x:Int = 20
+/*
+Any is the supertype of all types, also called the top type. Any has two direct subclasses: AnyVal and AnyRef.
+AnyVal represents value types. There are nine predefined value types and they are non-nullable: Double, Float, Long, Int, Short, Byte, Char, Unit, and Boolean
+AnyRef represents reference types. All non-value types are defined as reference types. Every user-defined type in Scala is a subtype of AnyRef.
+If Scala is used in the context of a Java runtime environment, AnyRef corresponds to java.lang.Object
+*/
+
+//Переопредление функции toString базового класса
+  override def toString(): String = if (x > 20) ( s"SomeClass_1: Override toString method $x > 20 " ) else ( s"SomeClass_1: Override toString method $x <= 20 " )
+  println("SomeClass_1: The main constructor, x = $x")
 }
 
-//Способы задания парамтеров в основном кострукторе
-//z - имеет модификатор public, x - имеет модификатор private[this]
+//  ____________________ SomeClass_2 ____________________
+/*
+Способы задания парамтеров в основном кострукторе
+z - имеет модификатор по умолчанию public, x - имеет модификатор private[this] по уполчанию
+Параметры конструкторов имеют по умолчанию модификатор private[this]. Для превращения их в поле класса надо добавить в объявление ключевое слово val/var
+*/
+class SomeClass_2(x: Int, private val x2: Int, val y: Int){
+  println("\nSomeClass_2: Способы задания парамтеров в основном кострукторе")
+  var z: Int = 20
+  private var w: Int = 15
+  protected var w2: Int = 16
 
-//Параметры конструкторов имеют по умолчанию модификатор private[this].
-//Для превращения их в поле класса надо добавить в объявление ключевое слово val/var.
-class SomeClass_2(x: Int, private val xx: Int, val z: Int){
-
-  var y:Int = 20
-
-  override def toString():String = s"Override toString method in the class and we have full access to parameters: x = $x, xx = $xx, y = $y and z = $z"
+  println(s"SomeClass_2: The main constructor, (x: Int) = $x, (private val x2) = $x2, (val y: Int) = $y , (inner public var z) = $z " +
+    s", (inner private var w) = $w , (inner protected var w2) = $w2 ")
 
 }
 
-
-/* Вспомогательные конструкторы в Scala должны либо называть основной конструктор (как в случае с landon9720),
-либо другой вспомогательный конструктор из того же класса, что и их первое действие.
-Они не могут просто вызвать конструктор суперкласса явно или неявно, как они могут в Java.
-Это гарантирует, что основной конструктор является единственной точкой входа в класс
-
-Дополнительные конструкторы объявляются функциями с названием this и должны вызывать основной конструктор
+//  ____________________ SomeClass_3 ____________________
+// Вспомогательные конструкторы
+/* Вспомогательные конструкторы в Scala должны либо вызывать основной конструктор, либо другой вспомогательный конструктор из того же класса.
+Они не могут просто вызвать конструктор суперкласса явно или неявно, как в Java. Это гарантирует, что основной конструктор является единственной точкой входа в класс
+Дополнительные конструкторы объявляются функциями с названием this и должны вызывать основной конструктор!!!
 */
 class SomeClass_3(val x: Int, val y: Int){
+  println("\nSomeClass_3: Вспомогательные конструкторы")
 
   var z:Int = 20
-
+  override def toString: String = s"SomeClass_3: Override toString method x = $x, y = $y, z = $z"
   //Вспомогательный контсруктор
   def this(x : Int, y : Int, z : Int ) {
     //тут обязательно должен вызыватся оснвоной конструкртор
     this(100, 200)
     this.z = 300
-    //это работет ксли при сздание обьекта пердается 3 параметра
-    println(s"SomeClass_3 and this is adidinal constructor: x = $x,  y = $y and z = $z")
+    //это работет ксли при сздание обьекта передается 3 параметра
+    println(s"SomeClass_3: this is addinal constructor: x = $x,  y = $y and z = $z")
   }
-  override def toString():String = s"Override toString method: x = $x,  y = $y and z = $z"
-
-  println(s"SomeClass_3 and this is main constructor: x = $x,  y = $y and z = $z")
+  println(s"SomeClass_3: and this is main constructor: x = $x,  y = $y and z = $z")
 }
 
-
-
-/*Как и в случае с Scala 2.8.0, вы также можете иметь значения по умолчанию для параметров конструктора и метода.
+//  ____________________ SomeClass_4 ____________________
+// Значения по умолчанию
+/*вы также можете иметь значения по умолчанию для параметров конструктора и метода.
 Параметры со значениями по умолчанию должны появляться после тех, у которых нет значений по умолчанию в списке параметров.
  */
 class SomeClass_4(val x: Int, val y: Int , z:Int = 0){
+  println("\nSomeClass_4: Значения по умолчанию")
   // тоже самое что в освновном констуркторе указать val y: Int = 10 ,  z:Int = 0
   def this(x:Int) {
     this(x,10)
-    println("Cotructor with 1 param")
+    println(s"SomeClass_4: this is addinal constructor with 1 param : x = $x,  y = $y, z = $z ")
   }
   //Вспомогательный контсруктор
   //Вспомогательный конструктор может вызывать основной или вспомогательный конструктор который определен ранее
   def this() {
     this(100)
-    println("Cotructor with 0 param")
+    println(s"SomeClass_4: this is addinal constructor with 0 param : x = $x,  y = $y, z = $z ")
   }
-  override def toString():String = s"Override toString method: x = $x,  y = $y, z = $z "
+  override def toString():String = s"SomeClass_4: Override toString method: x = $x,  y = $y, z = $z "
 
-  println(s"SomeClass_4 and this is main constructor: x = $x,  y = $y, z = $z ")
+  println(s"SomeClass_4: this is main constructor: x = $x,  y = $y, z = $z ")
 }
 
-
-//Несколько операций в Scala вызывают методы с определенным названием в классе. Оператор == вызванный на объекте класса вызывает метод equals, а ( ) метод apply
+//  ____________________ SomeClass_5 ____________________
+//Несколько операций в Scala вызывают методы с определенным названием в классе.
+// Оператор == вызванный на объекте класса вызывает метод equals, а ( ) метод apply
 class SomeClass_5(val x: Int){
+  println("\nSomeClass_5: Особые опрекация в классе")
+  //Операция сравнения примененая к любому типа будет выдавать true (Boolean)
   override def equals(other: Any) = true
-  def apply() = println(x*x)
-  def apply(n: Int) = println(x * n)
+  //Операция скобочки
+  def apply() = x*x
+  def apply(n: Int) = x * n
 }
 
 
 
 
 object main_object extends App{
+  //  ____________________ SomeClass_1 ____________________
   //Основной конструктор
   val someclass_11 = new SomeClass_1
   val someclass_12 = new SomeClass_1()
-  println(s"Simple class and x =  ${someclass_11.x}")
+  //метод println  вызывет метод toString класса, который был переопределен
+  println(someclass_11)
+  //по умолчанию все переетры в классе public
+  someclass_12.x = 100
+  println(someclass_12)
 
+
+  //  ____________________ SomeClass_2 ____________________
+  //Способы задания парамтеров в основном кострукторе
+  //class SomeClass_2(x: Int, private val x2: Int, val y: Int){
   val someclass_21 = new SomeClass_2(0, 1, 2)
-  println(s"\nNot such simple class\nx =  ${someclass_21.y}\nand z = ${someclass_21.z} \nbut x is not available outside the class" +
-    s"\nand the behavior of the xx")
-  println(someclass_21.toString())
+  println(s"SomeClass_2: we have access to y = ${someclass_21.y}, z = ${someclass_21.z} and don't have access to x, x2, w, w2 ")
+  println(s"SomeClass_2: we didn't overade method to String so someclass_21 = $someclass_21 ")
 
+  //  ____________________ SomeClass_3 ____________________
   //Вспомогательный конструктор
-  println("\nExample not running adidinal constructor")
   val someclass_31 = new SomeClass_3(0,0)
-  println(someclass_31.toString())
   println(someclass_31)
-
-  println("\nExample running adidinal constructor")
   val someclass_32 = new SomeClass_3(0,0,0)
-  //println к обьекту применил toString метод а он в классе был переопредлене
   println(someclass_32)
 
+  //  ____________________ SomeClass_4 ____________________
+
   //Значения по умолчанию
-  println("\nExample ")
   val someclass_41 = new SomeClass_4()
   println(someclass_41)
   val someclass_42 = new SomeClass_4(11)
@@ -112,11 +134,14 @@ object main_object extends App{
   val someclass_44 = new SomeClass_4(11,22,33)
   println(someclass_44)
 
-  println("\nExample ")
-  val someclass_51 = new SomeClass_5(10)
-  println(someclass_51 == "")
-  println(someclass_51 == 1)
-  someclass_51()
-  someclass_51(12)
+  //  ____________________ SomeClass_5 ____________________
+
+  val someclass_51 = new SomeClass_5(14)
+  val eq = someclass_51 == " "
+  println(s"The operation equals was overided someclass_51 == \'\' -> ${eq } ")
+  println(s"The operation equals was overided someclass_51 == 1 -> ${someclass_51 == 1 } ")
+  println(s"The operation equals was overided someclass_51.x == 1 -> ${someclass_51.x == 1 } ")
+  println(s"The operation apply() = x*x -> ${someclass_51()} ")
+  println(s"The operation apply(n) = x*n -> ${someclass_51(12)} ")
 
 }
