@@ -1,0 +1,60 @@
+package edu.allaboutscala.ysavitskaya
+
+//Функции как объекты
+/*Программиты говорят: 'вызываем функцию f, передавая ее x как параметр'
+Математики говорят: 'применении функции f к ее аргументу x'
+apply служит для устранения разрыва между объектно-ориентированными и функциональными парадигмами в Scala. Каждая функция из Scala может быть представлена ​​как объект.
+Поскольку все объекты в Scala теперь могут рассматриваться как ссылка на объект.
+Например, мы можем вызвать метод toString, унаследованный от Any, что было бы невозможно для чистой функции, потому что функции не имеют методов
+Теперь, если мы хотим фактически выполнить функцию или как математик скажем "применить функцию к своим аргументам", мы бы вызвали метод apply для объекта
+
+Компилятор Scala входит и всякий раз, когда у нас есть ссылка f на объект функции и записывается f (args) для применения аргументов к представленной функции
+, компилятор молча расширяет f (args) до вызова метода объекта f.apply (args).
+
+Каждая функция из Scala может рассматриваться как объект, и она работает и наоборот - каждый объект может рассматриваться как функция, если он имеет метод apply.
+*/
+class SomeClass_apply(x : Int){
+  println("\nSomeClass_apply: show method apply")
+  println("\nSomeClass_apply: constructor start")
+
+  def apply(y: Int): Int = {
+    println(s"SomeClass_apply: apply method for y = $y")
+    x + y
+  }
+
+  //эта функция не обьект у нее нет мтеожом
+  def f(y: Int): Int = {
+    println(s"SomeClass_apply: f method  for y = $y")
+    x * y
+  }
+  //тут функция будет уже обьектом с методами
+  println("SomeClass_apply: middle of the constructor")
+
+  val f_any = f(x)
+
+
+  //Тут функцмя как обьект и она имеет методы, в том числе apply
+  val f_2 = (x:Int) => {
+    println(s"SomeClass_apply: f function as object for x = $x")
+    x * x
+  }
+  //у функции так же есть и дургие методы
+  //сначала будет вычесленна функция f_3 потом аргумент будет отправлен в функцию f_2
+  val f_3 = f_2.compose((x:Int) => x - 10)
+  println("SomeClass_apply: constructor end\n")
+}
+
+
+object main_object_apply extends App{
+
+  val someclass_apply = new SomeClass_apply(10)
+  println(s"someclass_apply(1) = ${someclass_apply(1)}")
+  println(s"someclass_apply.apply(2) = ${someclass_apply.apply(2)}")
+  //не могу использовать apply метож для функции заданной через def
+  println(s"someclass_apply.f(3) = ${someclass_apply.f(3)}")
+
+  println(s"someclass_apply.f_2(4) = ${someclass_apply.f_2(4)}")
+  println(s"someclass_apply.f_2.apply(5) = ${someclass_apply.f_2.apply(5)}")
+  println(s"someclass_apply.f_3(6) = ${someclass_apply.f_3(6)}")
+
+}
