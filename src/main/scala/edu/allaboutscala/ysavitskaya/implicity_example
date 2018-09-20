@@ -1,0 +1,36 @@
+package edu.allaboutscala.ysavitskaya
+
+
+/*
+The Scala Predef class makes use of implicit function to provide ready made conversions such as Java from/to Scala.
+ */
+class Some_Class(s: String) {
+
+  def isSomeCheck: Boolean = s == "test"
+
+}
+
+object Some_Object_Implicit {
+
+  implicit def some_def_implicit_func(x : String)= { println("some_def_implicit_func start.."); new Some_Class(x) }
+
+}
+
+object some_main_object extends App {
+
+  import Some_Object_Implicit._
+
+  // 1. str_1 : string не содержит метода isSomeCheck по этому комперятор ищет гденить isSomeCheck метод
+  // 2. нашли метод isSomeCheck в класса Some_Class
+  // 3. изем метож преобразования String в Some_Class и находим implicit def some_def_implicit_func
+  // 4. НЕЯВНО это метож вызывается и приорбазует String->Some_Class
+  // 5. получаем доуступ к методу isSomeCheck
+  // 6. Woot
+  println("Start program")
+  val str_1 : String = "test"
+  println(s" $str_1.isSomeCheck =  ${str_1.isSomeCheck}")
+
+  val str_2 : String = "_"
+  println(s" $str_2.isSomeCheck =  ${str_2.isSomeCheck}")
+
+}
