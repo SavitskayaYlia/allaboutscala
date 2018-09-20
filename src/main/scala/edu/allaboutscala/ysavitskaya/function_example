@@ -1,0 +1,171 @@
+
+import org.apache.hadoop.io.MapFile.Reader
+import org.apache.spark.sql.types._
+
+
+object main_object extends App {
+  //________  1 .  default values to function parameters ________
+  def some_def(x: Int = 0): Double = {
+    println(s"some_def: x = $x")
+    x.toDouble / 3.0
+  }
+
+  println("\n________  1 .  default values to function parameters ________")
+  println(some_def(5))
+  println(some_def())
+
+
+  //________  2 .  using Option as input param ________
+  def some_def_option_input(x: Int = 0, y: Option[Int] = None): Double = {
+    println(s"some_def_option: x = $x , y = $y")
+    y match {
+      case Some(y) =>
+        x / y
+      case None => x
+    }
+  }
+
+  println("\n________  2 .  using Option as input param ________")
+  //второй параметр задается имеено через Some тип
+  println(s"some_def_option_input(10,Some(2)) : ${some_def_option_input(10, Some(2))}\n")
+  println(s"some_def_option_input(10) : ${some_def_option_input(10)}\n")
+
+  println("\n________  2.0 .  using Option ________")
+  //переменная типа Option[String]
+  val option_val1: Option[String] = Some(" some string ")
+  println(s"1. option_val1 : Option[String] = Some(' some string ')  = $option_val1 ")
+  println(s"2. option_val1.getClass : ${option_val1.getClass}")
+  //get получить значение или более безопастно getOrElse получить значение или если оно пустое заменить
+  println(s"3. option_val1 : Option[String] = Some(' some string ') get : ${option_val1.get} ")
+  println(s"4. option_val1 : Option[String] = Some(' some string ') getOrElse:  ${option_val1.getOrElse("empty")} \n")
+
+  //как вариант получить занчение их пустой переменной можно через map
+  var option_val1_map = option_val1.map(x => println(s"1. option_val1_map = $option_val1"))
+  println(s"2. option_val1_map.getClass : ${option_val1_map.getClass}\n")
+
+  val option_val2: Option[String] = None
+  println(s"1. option_val2 : Option[String] = None $option_val2 ")
+  //this line lead to error  java.util.NoSuchElementException at scala.None$.get
+  //println(s"option_val2 : Option[String] = None ${option_val2.get} ")
+  println(s"2. option_val2 : Option[String] = None getOrElse  = ${option_val2.getOrElse("empty")} ")
+  //not printed
+  var option_val2_map = option_val2.map(x => println(s"option_val1_map = $option_val2"))
+  println(s"3. option_val2_map.getClass ${option_val2_map.getClass}")
+
+
+  //________  3 .  using Option as output param ________
+  def some_def_option_output(x: Option[String]): Option[String] = {
+    println("\n Start..")
+    println(s"1. x = ${x}")
+    println(s"1.1 x.getClass = ${x.getClass} ")
+
+    x match {
+      case Some(x) => println(s"2. x = ${x}\n2.1 x.getClass = ${x.getClass} "); Option(x).filter(_.nonEmpty)
+      case None => println(s"3. x = ${x}\n3.1 x.getClass = ${x.getClass} "); None // Option(x.getOrElse("ST")).filter(_.nonEmpty)
+    }
+  }
+
+  println("\n________  3 .  using Option as output param ________")
+  val some_def_option_output_1 = some_def_option_output(Some("test"))
+  println(s"some_def_option_output_1.getClass  ${some_def_option_output_1.getClass} ")
+  println(s"some_def_option_output_1.get  ${some_def_option_output_1.getOrElse('_')} ")
+
+  val some_def_option_output_2 = some_def_option_output(None)
+  println(s"some_def_option_output_2.getClass  ${some_def_option_output_2.getClass} ")
+  println(s"some_def_option_output_2.get  ${some_def_option_output_2.getOrElse('_')} ")
+  val some_def_option_output_2_map = some_def_option_output_2.map(x => " Empty ")
+  println(s"some_def_option_output_2_map  ${some_def_option_output_2_map} ")
+
+
+  //________  4 .  Function With Implicit Parameters ________
+  /*
+  Неявные параметры — это параметры, которые могут быть автоматически переданы в функцию из контекста ее вызова. Для этого в нем должны быть однозначно определены и помечены ключевым словом implicit переменные соответствующих типов.
+  */
+  def some_def_implicit_parameter(x: Int)(implicit implicit_y: Int, implicit_z: Int): Int = {
+    x * implicit_y * implicit_z
+  }
+
+  println("\n________  4 .  Function With Implicit Parameters ________")
+  //это как конатсанта с областью видимости в рамках класса видимо
+  implicit val implicit_y = 2
+  implicit val implicit_z = 3
+  println(s"implicit_y*2/3 = ${implicit_y * 2 / 3.0}")
+  println(s"some_def_implicit_parameter(2) and implicit_y = 2 : ${some_def_implicit_parameter(2)(implicit_y, implicit_z)} ")
+
+
+  println("\n________  5 .  Generic typed function ________")
+  def some_generic_function[T]( x : T): Unit ={
+    x match {
+      case a : String => println(" get String")
+      case a : Double => println(" get Double")
+      case _ =>  println(" get Something Else ")
+    }
+  }
+  some_generic_function("String")
+  some_generic_function[String]("String")
+  some_generic_function(3.2)
+  some_generic_function[Int](0)
+
+  println("\n________  6 .  generic polymorphic function ________")
+  def generic_polymorphic_fun[T]( x : T ) ={
+    x match {
+      case a : String => Seq[T](x)
+      case a : Int => Seq[T](x)
+      case a @_ => Seq[T](x)
+    }
+  }
+  println(generic_polymorphic_fun[Double](3.2))
+
+
+
+  def generic_polymorphic_fun_pattern[T]( x : T ) ={
+    x match {
+      case a : String => Seq[String]("String_type")
+      case a : Int => Seq[String]("Int type ")
+      //pattern matching variable @ pattern binds variable to the value matched by pattern if the pattern matches.
+      case x @ "three" => Seq[String]("three")
+      case x @ Some("three") => Seq[String]("Some(three)")
+      case a @ _ => Seq[T](x)
+    }
+  }
+  val generic_polymorphic_fun_1 = generic_polymorphic_fun_pattern[Double](3.2)
+  println(s"\ngeneric_polymorphic_fun_1 getClass = ${generic_polymorphic_fun_1.getClass}" )
+  println(s"generic_polymorphic_fun_1 = ${generic_polymorphic_fun_1}" )
+
+  val generic_polymorphic_fun_2 = generic_polymorphic_fun_pattern("test")
+  println(s"\ngeneric_polymorphic_fun_2 getClass = ${generic_polymorphic_fun_2.getClass}" )
+  println(s"generic_polymorphic_fun_2 = ${generic_polymorphic_fun_2}" )
+
+  val generic_polymorphic_fun_3 = generic_polymorphic_fun_pattern(5)
+  println(s"\ngeneric_polymorphic_fun_3 getClass = ${generic_polymorphic_fun_3.getClass}" )
+  println(s"generic_polymorphic_fun_3 = ${generic_polymorphic_fun_3}" )
+
+  val generic_polymorphic_fun_4 = generic_polymorphic_fun_pattern("three")
+  println(s"\ngeneric_polymorphic_fun_4 getClass = ${generic_polymorphic_fun_4.getClass}" )
+  println(s"generic_polymorphic_fun_4 = ${generic_polymorphic_fun_4}" )
+
+  val generic_polymorphic_fun_5 = generic_polymorphic_fun_pattern(Some("three"))
+  println(s"\ngeneric_polymorphic_fun_5 getClass = ${generic_polymorphic_fun_5.getClass}" )
+  println(s"generic_polymorphic_fun_5 = ${generic_polymorphic_fun_5}" )
+
+  println("\n________  7 . function which takes variable number of arguments ________")
+  def variable_number_of_arguments( ss : String*) ={
+    //scala.collection.mutable.WrappedArray$ofRef
+    println(s"ss.getClass ${ss.getClass}")
+    println(s"variable_number_of_arguments ${ss.mkString(" , ")}\n" )
+  }
+
+  variable_number_of_arguments()
+  variable_number_of_arguments("1", "2" , "3")  // scala.collection.mutable.WrappedArray$ofRef
+
+  val arguments : List[String] = List("1", "2" , "3")
+  //получим ошибку что ждали String а передали List
+  //variable_number_of_arguments(arguments )
+
+  //type ascription
+  //f(xs: _*)         // Sequence xs is passed as multiple parameters to f(ys: T*)
+  //case Seq(xs @ _*) // Identifier xs is bound to the whole matched sequence
+  variable_number_of_arguments(arguments:_*)  // ss.getClass class scala.collection.immutable.$colon$colon
+
+}
+
